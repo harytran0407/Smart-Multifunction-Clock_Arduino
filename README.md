@@ -57,43 +57,40 @@ Arduino Sensors - Serial (UART)
     }
 
 1. Serial Communication
-   ESP8266 nhận dữ liệu sensor từ Arduino qua UART:
-   Format message:
-   TEMP_00
-   HUM_00
-   DIST_00
-   GAS_00
-   BPM_00
-   AL_MODE/ AL_STOP/ AL_SAVE
+   - ESP8266 nhận dữ liệu sensor từ Arduino qua UART:
+   - Format message:
+       TEMP_00
+       HUM_00
+       DIST_00
+       GAS_00
+       BPM_00
+       AL_MODE/ AL_STOP/ AL_SAVE
 
-   Parser:
-   handleSerial() - đọc dữ liệu từ UART
-   ----> parseCmd() - phân tích và xử lý dữ liệu
-   VD: TEMP_30 ---> temp = 30
+   - Parser:
+   - handleSerial() (đọc dữ liệu từ UART) ----> parseCmd() (phân tích và xử lý dữ liệu)
+       VD: TEMP_30 ---> temp = 30
 
 2. Sensor Processing
    a. Temperature & Humidity
-   processTempAndHum() ---> gửi lên Blynk ---> Xử lý trạng thái
+   - processTempAndHum() ---> gửi lên Blynk ---> Xử lý trạng thái
 
-   temp < 18 → COLD
-   temp > 35 → HOT
-   hum < 30 → DRY
-   hum > 70 → WET
-   ---> updateStatus on Terminal ---> Gửi trạng thái lên Blynk (COLD/ HOT/ DRY/ WET)
+       temp < 18 → COLD
+       temp > 35 → HOT
+       hum < 30 → DRY
+       hum > 70 → WET
+       ---> updateStatus on Terminal ---> Gửi trạng thái lên Blynk (COLD/ HOT/ DRY/ WET)
 
    b. Gas Sensor
-   processGas() ---> handleGas()
-   gasValue > 700 ---> gasAlarm = true ---> tone(BUZZER_PIN, 2000) ---> updateStatus on Terminal ---> showGasWarning() on OLED;
+   - processGas() ---> handleGas()
+   - gasValue > 700 ---> gasAlarm = true ---> tone(BUZZER_PIN, 2000) ---> updateStatus on Terminal ---> showGasWarning() on OLED;
 
-   Alarm tự tắt sau 5 phút
-   if (millis() - gasStartTime > 300000) {
-   gasAlarm = false;
-   }
-   gasStartTime - thời điểm gasAlarm == true
+   - Alarm tự tắt sau 5 phút
+       if (millis() - gasStartTime > 300000) {
+       gasAlarm = false; }
 
-   Nếu tắt bằng Ultra hoặc OFF:
-   gasIgnoreUntil = millis() + 300000;
-   - Giữ trạng thái IGNORE trong 5 phút, sau 5 phút vẫn còn vượt mức GAS thì BUZZER tiếp tục phát.
+   - Nếu tắt bằng Ultra hoặc OFF:
+       gasIgnoreUntil = millis() + 300000;
+     Giữ trạng thái IGNORE trong 5 phút, sau 5 phút vẫn còn vượt mức GAS thì BUZZER tiếp tục phát.
 
    c. Distance Sensor
    processDistance()
@@ -164,4 +161,5 @@ Arduino Sensors - Serial (UART)
    HH:MM and Blink input digits
 
 6. Blynk Connection
-   ![alt text](image.png)
+   <img width="915" height="510" alt="Screenshot 2026-03-16 211132" src="https://github.com/user-attachments/assets/5860d9af-d205-4c5a-81cc-a04031184657" />
+
