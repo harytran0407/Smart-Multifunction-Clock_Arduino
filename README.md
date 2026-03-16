@@ -85,47 +85,39 @@ Arduino Sensors - Serial (UART)
    -     gasValue > 700 ---> gasAlarm = true ---> tone(BUZZER_PIN, 2000) ---> updateStatus on Terminal ---> showGasWarning() on OLED;
 
    - Alarm tự tắt sau 5 phút
-       -     if (millis() - gasStartTime > 300000) {gasAlarm = false; }
+-     if (millis() - gasStartTime > 300000) {gasAlarm = false; }
 
    - Nếu tắt bằng Ultra hoặc OFF:
-       -        gasIgnoreUntil = millis() + 300000;
+-        gasIgnoreUntil = millis() + 300000;
      Giữ trạng thái IGNORE trong 5 phút, sau 5 phút vẫn còn vượt mức GAS thì BUZZER tiếp tục phát.
 
    c. Distance Sensor
    processDistance()
-   -        if (dist < 5) alarmRining, gasAlarm == false
+-        if (dist < 5) alarmRining, gasAlarm == false
 
    d. Heart Rate System
-   processBpm()
-   - Dùng phương pháp lọc nhiễu, sử dụng BUFFER lưu 4 số và cho ra 1 số trung bình.
-   - Sau đó gửi lên Blynk, trực quan hóa bằng Chart
-     processBpmAverage()
-   - Tính trung bình BPM trong 30 giây, rồi cho ra kết quả trạng thái.
+   
+- processBpm(): Dùng phương pháp lọc nhiễu, sử dụng BUFFER lưu 4 số và cho ra 1 số trung bình.
+- Sau đó gửi lên Blynk, trực quan hóa bằng Chart  
+- processBpmAverage(): Tính trung bình BPM trong 30 giây, rồi cho ra kết quả trạng thái.
 
 ## Alarm System
    4 nhóm alarm:
-   MON-FRI
-   SAT-SUN
-   ALL DAYS
-   CUSTOM
-
-   if
-   {
-   alarmEnabled
-   AND weekday matched
-   AND hour == alarmH
-   AND minute == alarmM
-   } ---> alarmRinging == true
+   - MON-FRI
+   - SAT-SUN
+   - ALL DAYS
+   - CUSTOM
+-     if { alarmEnabled AND weekday matched AND hour == alarmH AND minute == alarmM} ---> alarmRinging == true
 
 ## Smart Buzzer
 
-   # Đối với Alarm Clock:
+   i. Đối với Alarm Clock:
    - Buzzer tăng 300hz mỗi 500ms, không gây giật mình khi báo thức
 
-   # Đối với Gas Alarm:
+   ii. Đối với Gas Alarm:
    - Buzzer bình thường
 
-## Display System
+## OLED
 
 OLED có 4 MODE:
     
@@ -156,10 +148,10 @@ Khi có cảnh báo GAS:
 
        Main Screen ---> Gas Warning ---> Main Screen
 
-   ## 7 SEGMENT DISPLAY
+## 7 Segment Display
 
        HH:MM and Blink input digits
 
-6. Blynk Connection
+## Blynk Connection
    <img width="915" height="510" alt="Screenshot 2026-03-16 211132" src="https://github.com/user-attachments/assets/5860d9af-d205-4c5a-81cc-a04031184657" />
 
