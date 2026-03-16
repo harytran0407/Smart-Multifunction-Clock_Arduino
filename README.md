@@ -56,45 +56,44 @@ Arduino Sensors - Serial (UART)
         handleLed();
     }
 
-#1. Serial Communication
+## Serial Communication
    - ESP8266 nhận dữ liệu sensor từ Arduino qua UART:
    - Format message:
-       TEMP_00
-       HUM_00
-       DIST_00
-       GAS_00
-       BPM_00
-       AL_MODE/ AL_STOP/ AL_SAVE
+       -        TEMP_00
+       -        HUM_00
+       -        DIST_00
+       -        GAS_00
+       -        BPM_00
+       -        AL_MODE/ AL_STOP/ AL_SAVE
 
    - Parser:
    - handleSerial() (đọc dữ liệu từ UART) ----> parseCmd() (phân tích và xử lý dữ liệu)
        VD: TEMP_30 ---> temp = 30
 
-#2. Sensor Processing
+## Sensor Processing
    a. Temperature & Humidity
    - processTempAndHum() ---> gửi lên Blynk ---> Xử lý trạng thái
 
-       temp < 18 → COLD
-       temp > 35 → HOT
-       hum < 30 → DRY
-       hum > 70 → WET
+           temp < 18 → COLD
+           temp > 35 → HOT
+           hum < 30 → DRY
+           hum > 70 → WET
        ---> updateStatus on Terminal ---> Gửi trạng thái lên Blynk (COLD/ HOT/ DRY/ WET)
 
    b. Gas Sensor
-   - processGas() ---> handleGas()
-   - gasValue > 700 ---> gasAlarm = true ---> tone(BUZZER_PIN, 2000) ---> updateStatus on Terminal ---> showGasWarning() on OLED;
+   -     processGas() ---> handleGas()
+   -     gasValue > 700 ---> gasAlarm = true ---> tone(BUZZER_PIN, 2000) ---> updateStatus on Terminal ---> showGasWarning() on OLED;
 
    - Alarm tự tắt sau 5 phút
-       if (millis() - gasStartTime > 300000) {
-       gasAlarm = false; }
+       -     if (millis() - gasStartTime > 300000) {gasAlarm = false; }
 
    - Nếu tắt bằng Ultra hoặc OFF:
-       gasIgnoreUntil = millis() + 300000;
+       -        gasIgnoreUntil = millis() + 300000;
      Giữ trạng thái IGNORE trong 5 phút, sau 5 phút vẫn còn vượt mức GAS thì BUZZER tiếp tục phát.
 
    c. Distance Sensor
    processDistance()
-   dist < 5cm ---> alarmRining, gasAlarm == false
+   -        if (dist < 5) alarmRining, gasAlarm == false
 
    d. Heart Rate System
    processBpm()
@@ -103,7 +102,7 @@ Arduino Sensors - Serial (UART)
      processBpmAverage()
    - Tính trung bình BPM trong 30 giây, rồi cho ra kết quả trạng thái.
 
-#3. Alarm System
+## Alarm System
    4 nhóm alarm:
    MON-FRI
    SAT-SUN
@@ -118,7 +117,7 @@ Arduino Sensors - Serial (UART)
    AND minute == alarmM
    } ---> alarmRinging == true
 
-#4. Smart Buzzer
+## Smart Buzzer
 
    # Đối với Alarm Clock:
    - Buzzer tăng 300hz mỗi 500ms, không gây giật mình khi báo thức
@@ -126,39 +125,40 @@ Arduino Sensors - Serial (UART)
    # Đối với Gas Alarm:
    - Buzzer bình thường
 
-#5. Display System
+## Display System
 
-    OLED có 4 MODE:
-   1. Main Screen
+OLED có 4 MODE:
+    
+       1. Main Screen
       - Alarm Time
       - Gas Level
       - Clock
       - Date
       - Temperature
       - Humidity
-   2. Heart Mode
+       2. Heart Mode
       - Progress bar
       - Heart Animation
       - Live BPM
-   3. Result Screen
+       3. Result Screen
       - Average BPM
       - Health Status
-   4. Gas Warning
+       4. Gas Warning
       - WARNING
       - GAS DETECTED
       - LEVEL: xxx
 
-    Khi bắt đầu đo BPM:
+Khi bắt đầu đo BPM:
 
-   Main Screen ---> Heart Mode ---> Result Screen ---> Main Screen
+       Main Screen ---> Heart Mode ---> Result Screen ---> Main Screen
 
-    Khi có cảnh báo GAS:
+Khi có cảnh báo GAS:
 
-   Main Screen ---> Gas Warning ---> Main Screen
+       Main Screen ---> Gas Warning ---> Main Screen
 
-   # 7 SEGMENT DISPLAY
+   ## 7 SEGMENT DISPLAY
 
-   HH:MM and Blink input digits
+       HH:MM and Blink input digits
 
 6. Blynk Connection
    <img width="915" height="510" alt="Screenshot 2026-03-16 211132" src="https://github.com/user-attachments/assets/5860d9af-d205-4c5a-81cc-a04031184657" />
