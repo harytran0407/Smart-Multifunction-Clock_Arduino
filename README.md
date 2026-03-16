@@ -56,7 +56,7 @@ Arduino Sensors - Serial (UART)
         handleLed();
     }
 
-1. Serial Communication
+#1. Serial Communication
    - ESP8266 nhận dữ liệu sensor từ Arduino qua UART:
    - Format message:
        TEMP_00
@@ -70,7 +70,7 @@ Arduino Sensors - Serial (UART)
    - handleSerial() (đọc dữ liệu từ UART) ----> parseCmd() (phân tích và xử lý dữ liệu)
        VD: TEMP_30 ---> temp = 30
 
-2. Sensor Processing
+#2. Sensor Processing
    a. Temperature & Humidity
    - processTempAndHum() ---> gửi lên Blynk ---> Xử lý trạng thái
 
@@ -103,7 +103,7 @@ Arduino Sensors - Serial (UART)
      processBpmAverage()
    - Tính trung bình BPM trong 30 giây, rồi cho ra kết quả trạng thái.
 
-3. Alarm System
+#3. Alarm System
    4 nhóm alarm:
    MON-FRI
    SAT-SUN
@@ -118,7 +118,7 @@ Arduino Sensors - Serial (UART)
    AND minute == alarmM
    } ---> alarmRinging == true
 
-4. Smart Buzzer
+#4. Smart Buzzer
 
    # Đối với Alarm Clock:
    - Buzzer tăng 300hz mỗi 500ms, không gây giật mình khi báo thức
@@ -126,9 +126,9 @@ Arduino Sensors - Serial (UART)
    # Đối với Gas Alarm:
    - Buzzer bình thường
 
-5. Display System
+#5. Display System
 
-   # OLED có 4 MODE:
+    OLED có 4 MODE:
    1. Main Screen
       - Alarm Time
       - Gas Level
@@ -148,11 +148,11 @@ Arduino Sensors - Serial (UART)
       - GAS DETECTED
       - LEVEL: xxx
 
-   # Khi bắt đầu đo BPM:
+    Khi bắt đầu đo BPM:
 
    Main Screen ---> Heart Mode ---> Result Screen ---> Main Screen
 
-   # Khi có cảnh báo GAS:
+    Khi có cảnh báo GAS:
 
    Main Screen ---> Gas Warning ---> Main Screen
 
