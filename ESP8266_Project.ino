@@ -45,17 +45,12 @@ unsigned long gasStartTime = 0;     // Alarm start time
 unsigned long gasIgnoreUntil = 0;   // Ignore period to avoid spam
 
 // ================== HEART RATE ==================
-#define BPM_BUFFER 4
-
 bool heartMode = false;          // Heart measurement active
 bool heartBeatState = false;
 
 int bpm = 0;
+int BPMs = 0;
 int finalBPM = 0;
-
-int bpmArray[BPM_BUFFER];        // BPM moving average buffer
-int bpmIndex = 0;
-
 unsigned long lastBeat = 0;
 unsigned long lastBPMReceive = 0;
 
@@ -329,7 +324,10 @@ void loop() {
   handleSerial();   // đọc UART trước
 
   //BPM
-  if (millis() - lastBPMReceive > 3000) bpm = 0; //Sau 3 giây không có dữ liệu thì reset BPM
+  if (millis() - lastBPMReceive > 3000) {
+    bpm = 0;
+    BPMs = 0; //Sau 3 giây không có dữ liệu thì reset BPM
+  }
 
   processBpm();
   processBpmAverage();
@@ -520,16 +518,18 @@ void processGas(){
 
   if (millis() < gasIgnoreUntil) return; //Còn trong thời gian ignore thì không xử lý
 
-  if (gasValue > 700 && !gasAlarm) {
-
-    gasAlarm = true;
-    gasStartTime = millis();
-
-    tone(BUZZER_PIN, 2000);
-
-    updateStatus("WARNING: GAS DETECTED!");
+  static int gasCount = 0;
+  if (gasValue > 700) {
+    gasCount++;
+    if (gasCount >= 3 && !gasAlarm) {
+      gasAlarm = true;
+      gasStartTime = millis();
+      tone(BUZZER_PIN, 2000);
+      updateStatus("WARNING: GAS DETECTED!");
+      }
+  } else {
+   gasCount = 0;
   }
-
 }
 
 //================== FUNCTION TEMP AND HUM ===================
@@ -573,37 +573,28 @@ void processTempAndHum(){
 
 // ------ PROCESS BPM ------
 void processBpm(){
-  static int count = 0;
 
-  //Only process BPM in [20,200]
+  // chỉ validate thôi
   if (BPMs > 20 && BPMs < 200) {
-    bpmArray[bpmIndex++] = BPMs; //Lọc nhiễu - Mỗi buffer 4 số, lấy ra 1 số trung bình
-    if (count < BPM_BUFFER)
-    count++;
-    bpmIndex %= BPM_BUFFER;
+    bpm = BPMs;
 
-    long total = 0;
-    for (int i = 0; i < count; i++)
-      total += bpmArray[i];
+    // dùng cho tính trung bình 30s
+    if (millis() > bpmRest) {
 
-    bpm = total / count;
+      if (bpmStartTime == 0){
+        heartMode = true;
+        bpmStartTime = millis();
+      }
 
-    //Cộng dồn BPM trong 30 giây để lấy sum và count
-    if (bpm > 0 && millis()>bpmRest) {
-
-    if (bpmStartTime == 0){
-      heartMode = true;
-      bpmStartTime = millis();
-    }
       bpmSum += bpm;
       bpmCount++;
     }
 
-      Blynk.virtualWrite(V14, bpm);
-    }
-    else {
-      bpm = 0;
-    }
+    Blynk.virtualWrite(V14, bpm);
+  }
+  else {
+    bpm = 0;
+  }
 }
 
 void processBpmAverage() {
@@ -806,7 +797,7 @@ void showHeartScreen() {
   //BIG BPM
   oled.setTextSize(3);
   oled.setCursor(49,25);
-  oled.print(bpm);
+  oled.print(BPMs);
   
   oled.setTextSize(2);
   oled.setCursor(88,28);
@@ -910,10 +901,13 @@ void showSetTime(String buf, bool blinkOn) {
 //HH:MM
 void updateClockDisplay(int h, int m) {
 
+  DateTime now = rtc.now();
+  bool blink = now.second() % 2; // nhấp nháy theo giây
+  
   uint8_t seg[] = {
     //H1H2:M1M2
     display.encodeDigit(h / 10), //H1
-    display.encodeDigit(h % 10) | 0x80, //H2
+    display.encodeDigit(h % 10) | (blink ? 0x80 : 0x00), //H2
     display.encodeDigit(m / 10), //M1
     display.encodeDigit(m % 10) //M2
 

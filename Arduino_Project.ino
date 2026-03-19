@@ -102,7 +102,7 @@ void updateHeartRate() {
 
     currentBPM = 60 / (delta / 1000.0);
 
-    if (currentBPM > 20 && currentBPM < 255) {
+    if (currentBPM > 20 && currentBPM < 200) {
       storeHeartRate((byte)currentBPM);
     }
   }
@@ -137,6 +137,7 @@ void sendSensorData() {
   sendDistance();
 }
 
+
 // ==========================================================
 // SENSOR READ FUNCTIONS
 // ==========================================================
@@ -166,16 +167,19 @@ void sendHeartRate() {
 void sendGasLevel() {
 
   int gasValue = analogRead(PIN_GAS);
-
-  sendData("GAS_", gasValue);
+  /\gasValue = 800;
+  sendData("GAS_", gasValue*2);
   delay(20);
 }
 
 void sendDistance() {
 
   long distance = readDistance();
-
+  if (distance > 0){
+    
   sendData("DIST_", distance);
+  //Serial.println(distance);
+  }
 }
 
 // ==========================================================
@@ -190,9 +194,9 @@ long readDistance() {
   delayMicroseconds(10);
   digitalWrite(PIN_TRIG, LOW);
 
-  long duration = pulseIn(PIN_ECHO, HIGH, 30000);
+  long duration = pulseIn(PIN_ECHO, HIGH);
 
-  return duration * 0.034 / 2;
+  return duration/29/2;
 }
 
 // ==========================================================
